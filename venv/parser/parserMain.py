@@ -1,5 +1,7 @@
-import os
+# import os
 # try to parse from file
+#Get file from flashscore.com
+
 
 def parseRound(incomeStringRound):
 #define the round
@@ -72,7 +74,6 @@ def parseEventHomeScoreString(incomeEventHomeScoreString):
     beginOfTheEventHomeScoreString = incomeEventHomeScoreString.find(criteriaFirstEventHomeScoreString)
     endOfTheEventHomeTeamString = incomeEventHomeScoreString.find(criteriaSecondEventHomeScoreString, beginOfTheEventHomeScoreString)
     eventHomeScoreString = incomeEventHomeScoreString[beginOfTheEventHomeScoreString+len(criteriaFirstEventHomeScoreString):endOfTheEventHomeTeamString]
-    # print(eventHomeScoreString)
     return eventHomeScoreString
 
 def parseEventAwayScoreString(incomeEventAwayScoreString):
