@@ -1,0 +1,192 @@
+"use strict";
+var cjs;
+(function (cjs) {
+    var Api;
+    (function (Api) {
+        var Loader;
+        (function (Loader) {
+            Loader.ALL = 'all';
+            Loader.ONCE_FIRST = 'onceFirst';
+            Loader.ONCE_LAST = 'onceLast';
+        })(Loader = Api.Loader || (Api.Loader = {}));
+        var LoaderImpl = (function () {
+            function LoaderImpl() {
+                this._callbacks = [];
+                this._loaded = false;
+                this._handler = function () { };
+            }
+            LoaderImpl.prototype.call = function () {
+                var callback = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    callback[_i] = arguments[_i];
+                }
+                if (this._loaded) {
+                    this._call.apply(this, callback);
+                }
+                else {
+                    this._callbacks.push(callback);
+                }
+                return false;
+            };
+            LoaderImpl.prototype.callPriority = function () {
+                var callback = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    callback[_i] = arguments[_i];
+                }
+                if (this._loaded) {
+                    this._call.apply(this, callback);
+                }
+                else {
+                    this._callbacks.unshift(callback);
+                }
+                return false;
+            };
+            LoaderImpl.prototype.callAfter = function () {
+                var callback = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    callback[_i] = arguments[_i];
+                }
+                if (!this._loaded) {
+                    return false;
+                }
+                this._call.apply(this, callback);
+                return false;
+            };
+            LoaderImpl.prototype.fullfill = function (handler, type) {
+                if (type === void 0) { type = Loader.ALL; }
+                this._handler = handler;
+                var callbacks = [];
+                switch (type) {
+                    case Loader.ALL: {
+                        this._fullfill(this._callbacks);
+                        break;
+                    }
+                    case Loader.ONCE_FIRST: {
+                        callbacks.push(this._callbacks.shift());
+                        this._fullfill(callbacks);
+                        break;
+                    }
+                    case Loader.ONCE_LAST: {
+                        callbacks.push(this._callbacks.pop());
+                        this._fullfill(callbacks);
+                        break;
+                    }
+                }
+                this._loaded = true;
+            };
+            LoaderImpl.prototype._fullfill = function (callbacks) {
+                var callback;
+                while (callback = callbacks.shift()) {
+                    this._call.apply(this, callback);
+                }
+            };
+            LoaderImpl.prototype.reset = function () {
+                this._handler = function () { };
+                this._loaded = false;
+                this._callbacks = [];
+            };
+            LoaderImpl.prototype._call = function () {
+                var callback = [];
+                for (var _i = 0; _i < arguments.length; _i++) {
+                    callback[_i] = arguments[_i];
+                }
+                this._handler.apply(this, callback);
+            };
+            return LoaderImpl;
+        }());
+        var LoaderHandlerImpl = (function () {
+            function LoaderHandlerImpl() {
+                this._loaders = {};
+            }
+            LoaderHandlerImpl.prototype.get = function (name) {
+                if (!(name in this._loaders)) {
+                    this._loaders[name] = new LoaderImpl;
+                }
+                return this._loaders[name];
+            };
+            return LoaderHandlerImpl;
+        }());
+        Api.LoaderHandlerImpl = LoaderHandlerImpl;
+        Api.loader = new LoaderHandlerImpl();
+    })(Api = cjs.Api || (cjs.Api = {}));
+})(cjs || (cjs = {}));
+if (typeof window === 'undefined' || (window && window.process && window.process.env.JEST_WORKER_ID)) {
+    module.exports = cjs.Api;
+}
+"use strict";
+var cjs;
+(function (cjs) {
+    var Api;
+    (function (Api) {
+        var LocalLsid;
+        (function (LocalLsid) {
+            LocalLsid.STORAGE_KEY_LSID_EMAIL = 'lsid_email';
+            LocalLsid.STORAGE_KEY_LSID_HASH = 'lsid_hash';
+            LocalLsid.STORAGE_KEY_LSID_NICKNAME = 'lsid_nickname';
+            LocalLsid.INVALID_NICKNAME = '_____';
+        })(LocalLsid = Api.LocalLsid || (Api.LocalLsid = {}));
+        var LocalLsidImpl = (function () {
+            function LocalLsidImpl() {
+            }
+            LocalLsidImpl.prototype.beforeLoad = function (callback) {
+                callback(this._isUserLogged(), this._getUserNickname());
+            };
+            LocalLsidImpl.prototype._isUserLogged = function () {
+                var email = window.localStorage.getItem(LocalLsid.STORAGE_KEY_LSID_EMAIL);
+                var hash = window.localStorage.getItem(LocalLsid.STORAGE_KEY_LSID_HASH);
+                var nickname = window.localStorage.getItem(LocalLsid.STORAGE_KEY_LSID_NICKNAME);
+                if (email && hash && nickname) {
+                    return true;
+                }
+                return false;
+            };
+            LocalLsidImpl.prototype._getUserNickname = function () {
+                var nickname = window.localStorage.getItem(LocalLsid.STORAGE_KEY_LSID_NICKNAME);
+                var email = window.localStorage.getItem(LocalLsid.STORAGE_KEY_LSID_EMAIL);
+                var output = '';
+                if (email) {
+                    output = email;
+                }
+                if (nickname && nickname != LocalLsid.INVALID_NICKNAME) {
+                    output = nickname;
+                }
+                return output;
+            };
+            return LocalLsidImpl;
+        }());
+        Api.localLsid = new LocalLsidImpl();
+    })(Api = cjs.Api || (cjs.Api = {}));
+})(cjs || (cjs = {}));
+if (typeof window === 'undefined' || (window && window.process && window.process.env.JEST_WORKER_ID)) {
+    module.exports = cjs.Api;
+}
+"use strict";
+var cjs;
+(function (cjs) {
+    var Api;
+    (function (Api) {
+        var ViewportSwitcherLocal;
+        (function (ViewportSwitcherLocal) {
+            ViewportSwitcherLocal.STORAGE_KEY_VIEWPORT = 'viewport';
+        })(ViewportSwitcherLocal = Api.ViewportSwitcherLocal || (Api.ViewportSwitcherLocal = {}));
+        var ViewportSwitcherLocalImpl = (function () {
+            function ViewportSwitcherLocalImpl() {
+            }
+            ViewportSwitcherLocalImpl.prototype.beforeLoad = function (widthMap, callback) {
+                callback(this._getViewportWidth(widthMap));
+            };
+            ViewportSwitcherLocalImpl.prototype._getViewportWidth = function (widthMap) {
+                var value = window.localStorage.getItem(ViewportSwitcherLocal.STORAGE_KEY_VIEWPORT);
+                if (value && widthMap.hasOwnProperty(value)) {
+                    return widthMap[value];
+                }
+                return 0;
+            };
+            return ViewportSwitcherLocalImpl;
+        }());
+        Api.viewportSwitcherLocal = new ViewportSwitcherLocalImpl();
+    })(Api = cjs.Api || (cjs.Api = {}));
+})(cjs || (cjs = {}));
+if (typeof window === 'undefined' || (window && window.process && window.process.env.JEST_WORKER_ID)) {
+    module.exports = cjs.Api;
+}
