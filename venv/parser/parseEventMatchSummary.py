@@ -73,7 +73,10 @@ def parseTimeOfGoal(content, period):
                 positionOfGoleodor = content.find(keyWordGoleodor, positionOfKeyWordGoal)
                 positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
                 positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
-                print('Goal - ' + str(content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]))
+                goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
+
+                print('Goal - ' + goleodor)
+
                 positionOfKeyWordGoal = content.find(keyWordGoal, positionOfKeyWordGoal+len(keyWordGoal))
 
                 # assistant part
@@ -81,13 +84,15 @@ def parseTimeOfGoal(content, period):
                 if positionOfAsist != -1:
                     positionOfKeyWordAsistTech = content.find(keyWordPlayerTech, positionOfAsist) + len(keyWordPlayerTech)
                     positionOfKeyWordAsistTechEnd = content.find('/', positionOfKeyWordAsistTech)
-                    print('Assist - ' + str(content[positionOfKeyWordAsistTech:positionOfKeyWordAsistTechEnd]))
+                    assistant = content[positionOfKeyWordAsistTech:positionOfKeyWordAsistTechEnd]
+                    print('Assist - ' + assistant)
                 pass
             else:
                 positionOfGoleodor = content.find(keyWordGoleodor, positionOfKeyWordGoal)
                 positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
                 positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
-                print('Goal - ' + str(content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]))
+                goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
+                print('Goal - ' + goleodor)
                 positionOfKeyWordGoal = content.find(keyWordGoal, positionOfKeyWordGoal + len(keyWordGoal))
 
                 positionOfAsist = content.find(keyWordAssistant, positionOfKeyWordHomeAway, positionOfGoleodor)
