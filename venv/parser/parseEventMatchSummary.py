@@ -43,9 +43,121 @@ def parseDateTime(content):
     globalDate = date
     globalTime = time
 
-def parseTimeOfGoal(content, period):
+#TODO
+def parseAutogoal(content, period):
+    keyWordIncident = 'detailMS__incidentRow incidentRow--'
+    keyWordMissedPenalties = 'icon penalty-missed'
+    keyWordTimeOfGoal = '<div class="time-box">'
+    keyWordTimeOfGoalEnd = "'</div>"
+    keyWordGoleodor = 'participant-name'
+    keyWordPlayerTech = '/player/'
+    print(period + ' ' + str(content.count(keyWordMissedPenalties)))
+
+    countOfGoals = content.count(keyWordMissedPenalties)
+
+    positionOfkeyWordMissedPenalties = content.find(keyWordMissedPenalties)
+
+    if positionOfkeyWordMissedPenalties != -1: # if it is goal in period
+
+        positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfkeyWordMissedPenalties) + len(keyWordIncident)
+
+        while countOfGoals !=0:
+            team = content[positionOfKeyWordHomeAway:positionOfKeyWordHomeAway+4] # Team - home/away
+            print(team)
+            positionOfKeyWordTimeOfGoal = content.rfind(keyWordTimeOfGoal, 0, positionOfkeyWordMissedPenalties)+len(keyWordTimeOfGoal)
+            timeOfGoal = content[positionOfKeyWordTimeOfGoal:content.find(keyWordTimeOfGoalEnd, positionOfKeyWordTimeOfGoal)] #Time of goal
+
+            if team == 'home':
+                # goleodor part
+                positionOfGoleodor = content.find(keyWordGoleodor, positionOfkeyWordMissedPenalties)
+                positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
+                positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
+                goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
+                positionOfGoleodorNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfGoleodorNormalNameEnd = content.find('</a></span>', positionOfGoleodorNormalName)
+                goleodorNormalName = content[positionOfGoleodorNormalName:positionOfGoleodorNormalNameEnd]
+                goleodorTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd)-17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd)-9]
+
+                print('Missed penalty - ' + goleodor + ' ' + goleodorNormalName + ' ' + goleodorTechCode)
+                positionOfkeyWordMissedPenalties = content.find(keyWordMissedPenalties, positionOfkeyWordMissedPenalties+len(keyWordMissedPenalties)) # ++ for itteration
+            else:
+                positionOfGoleodor = content.find(keyWordGoleodor, positionOfkeyWordMissedPenalties)
+                positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
+                positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
+                goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
+                positionOfGoleodorNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfGoleodorNormalNameEnd = content.find('</a></span>', positionOfGoleodorNormalName)
+                goleodorNormalName = content[positionOfGoleodorNormalName:positionOfGoleodorNormalNameEnd]
+                goleodorTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 9]
+                print('Missed penalty - ' + goleodor + ' ' + goleodorNormalName + ' ' + goleodorTechCode)
+                positionOfkeyWordMissedPenalties = content.find(keyWordMissedPenalties, positionOfkeyWordMissedPenalties + len(keyWordMissedPenalties)) # ++ for itteration
+
+            positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfkeyWordMissedPenalties+len(keyWordIncident)) + len(keyWordIncident)
+            print(timeOfGoal)
+            countOfGoals -= 1 # -- move iterrator for while
+
+def parseMissedPenalties(content, period):
+    keyWordIncident = 'detailMS__incidentRow incidentRow--'
+    keyWordMissedPenalties = 'icon penalty-missed'
+    keyWordTimeOfGoal = '<div class="time-box">'
+    keyWordTimeOfGoalEnd = "'</div>"
+    keyWordGoleodor = 'participant-name'
+    keyWordPlayerTech = '/player/'
+
+
+    print(period + ' ' + str(content.count(keyWordMissedPenalties)))
+
+    countOfGoals = content.count(keyWordMissedPenalties)
+
+    positionOfkeyWordMissedPenalties = content.find(keyWordMissedPenalties)
+
+    if positionOfkeyWordMissedPenalties != -1: # if it is goal in period
+
+        positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfkeyWordMissedPenalties) + len(keyWordIncident)
+
+        while countOfGoals !=0:
+            team = content[positionOfKeyWordHomeAway:positionOfKeyWordHomeAway+4] # Team - home/away
+            print(team)
+            positionOfKeyWordTimeOfGoal = content.rfind(keyWordTimeOfGoal, 0, positionOfkeyWordMissedPenalties)+len(keyWordTimeOfGoal)
+            timeOfGoal = content[positionOfKeyWordTimeOfGoal:content.find(keyWordTimeOfGoalEnd, positionOfKeyWordTimeOfGoal)] #Time of goal
+
+            if team == 'home':
+                # goleodor part
+                positionOfGoleodor = content.find(keyWordGoleodor, positionOfkeyWordMissedPenalties)
+                positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
+                positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
+                goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
+                positionOfGoleodorNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfGoleodorNormalNameEnd = content.find('</a></span>', positionOfGoleodorNormalName)
+                goleodorNormalName = content[positionOfGoleodorNormalName:positionOfGoleodorNormalNameEnd]
+                goleodorTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd)-17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd)-9]
+
+                print('Missed penalty - ' + goleodor + ' ' + goleodorNormalName + ' ' + goleodorTechCode)
+                positionOfkeyWordMissedPenalties = content.find(keyWordMissedPenalties, positionOfkeyWordMissedPenalties+len(keyWordMissedPenalties)) # ++ for itteration
+            else:
+                positionOfGoleodor = content.find(keyWordGoleodor, positionOfkeyWordMissedPenalties)
+                positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
+                positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
+                goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
+                positionOfGoleodorNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfGoleodorNormalNameEnd = content.find('</a></span>', positionOfGoleodorNormalName)
+                goleodorNormalName = content[positionOfGoleodorNormalName:positionOfGoleodorNormalNameEnd]
+                goleodorTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 9]
+                print('Missed penalty - ' + goleodor + ' ' + goleodorNormalName + ' ' + goleodorTechCode)
+                positionOfkeyWordMissedPenalties = content.find(keyWordMissedPenalties, positionOfkeyWordMissedPenalties + len(keyWordMissedPenalties)) # ++ for itteration
+
+            positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfkeyWordMissedPenalties+len(keyWordIncident)) + len(keyWordIncident)
+            print(timeOfGoal)
+            countOfGoals -= 1 # -- move iterrator for while
+
+def parseGoals(content, period):
     keyWordIncident = 'detailMS__incidentRow incidentRow--'
     keyWordGoal = 'icon soccer-ball'
+    keyWordGoalPenalty = 'Penalty'
     keyWordTimeOfGoal = '<div class="time-box">'
     keyWordTimeOfGoalEnd = "'</div>"
     keyWordGoleodor = 'participant-name'
@@ -58,7 +170,7 @@ def parseTimeOfGoal(content, period):
 
     positionOfKeyWordGoal = content.find(keyWordGoal)
 
-    if positionOfKeyWordGoal != -1:
+    if positionOfKeyWordGoal != -1: # if it is goal in period
 
         positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfKeyWordGoal) + len(keyWordIncident)
 
@@ -74,40 +186,73 @@ def parseTimeOfGoal(content, period):
                 positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
                 positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
                 goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
+                positionOfGoleodorNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfGoleodorNormalNameEnd = content.find('</a></span>', positionOfGoleodorNormalName)
+                goleodorNormalName = content[positionOfGoleodorNormalName:positionOfGoleodorNormalNameEnd]
+                goleodorTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd)-17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd)-9]
 
-                print('Goal - ' + goleodor)
+                print('Goal - ' + goleodor + ' ' + goleodorNormalName + ' ' + goleodorTechCode)
 
-                positionOfKeyWordGoal = content.find(keyWordGoal, positionOfKeyWordGoal+len(keyWordGoal))
+                positionOfKeyWordGoal = content.find(keyWordGoal, positionOfKeyWordGoal+len(keyWordGoal)) # ++ for itteration
 
                 # assistant part
                 positionOfAsist = content.find(keyWordAssistant,  positionOfKeyWordHomeAway, positionOfKeyWordGoal)
+
                 if positionOfAsist != -1:
-                    positionOfKeyWordAsistTech = content.find(keyWordPlayerTech, positionOfAsist) + len(keyWordPlayerTech)
-                    positionOfKeyWordAsistTechEnd = content.find('/', positionOfKeyWordAsistTech)
-                    assistant = content[positionOfKeyWordAsistTech:positionOfKeyWordAsistTechEnd]
-                    print('Assist - ' + assistant)
-                pass
+                    positionOfKeyWordAssistTech = content.find(keyWordPlayerTech, positionOfAsist) + len(keyWordPlayerTech)
+                    positionOfKeyWordAssistTechEnd = content.find('/', positionOfKeyWordAssistTech)
+                    assistant = content[positionOfKeyWordAssistTech:positionOfKeyWordAssistTechEnd]
+
+                    positionOfAssistantNormalName = content.find('return false;">', positionOfKeyWordAssistTechEnd) + len('return false;">')
+                    positionOfAssistantNormalNameEnd = content.find('</a>)</span>', positionOfAssistantNormalName)
+                    assistantNormalName = content[positionOfAssistantNormalName:positionOfAssistantNormalNameEnd]
+                    assistantTechCode = content[content.find('return false;">', positionOfKeyWordAssistTechEnd) - 17:
+                                                content.find('return false;">', positionOfKeyWordAssistTechEnd) - 9]
+                    print('Assist - ' + assistant + ' ' + assistantNormalName + ' ' + assistantTechCode)
+
+                # penaltie part
+                positionOfPenalty = content.find(keyWordGoalPenalty,  positionOfKeyWordHomeAway, positionOfKeyWordGoal)
+
+                if positionOfPenalty != -1:
+                    penalty = content[positionOfPenalty:positionOfPenalty+7]
+                    print(penalty)
             else:
                 positionOfGoleodor = content.find(keyWordGoleodor, positionOfKeyWordGoal)
                 positionOfKeyWordGoleodorTech = content.find(keyWordPlayerTech, positionOfGoleodor) + len(keyWordPlayerTech)
                 positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordGoleodorTech)
                 goleodor = content[positionOfKeyWordGoleodorTech:positionOfKeyWordPlayerTechEnd]
-                print('Goal - ' + goleodor)
-                positionOfKeyWordGoal = content.find(keyWordGoal, positionOfKeyWordGoal + len(keyWordGoal))
+                positionOfGoleodorNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfGoleodorNormalNameEnd = content.find('</a></span>', positionOfGoleodorNormalName)
+                goleodorNormalName = content[positionOfGoleodorNormalName:positionOfGoleodorNormalNameEnd]
+                goleodorTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 9]
+                print('Goal - ' + goleodor + ' ' + goleodorNormalName + ' ' + goleodorTechCode)
+                positionOfKeyWordGoal = content.find(keyWordGoal, positionOfKeyWordGoal + len(keyWordGoal)) # ++ for itteration
 
                 positionOfAsist = content.find(keyWordAssistant, positionOfKeyWordHomeAway, positionOfGoleodor)
-
                 if positionOfAsist != -1:
-                    positionOfKeyWordAsistTech = content.find(keyWordPlayerTech, positionOfAsist) + len(keyWordPlayerTech)
-                    positionOfKeyWordAsistTechEnd = content.find('/', positionOfKeyWordAsistTech)
-                    print('Assist - ' + str(content[positionOfKeyWordAsistTech:positionOfKeyWordAsistTechEnd]))
+                    positionOfKeyWordAssistTech = content.find(keyWordPlayerTech, positionOfAsist) + len(keyWordPlayerTech)
+                    positionOfKeyWordAssistTechEnd = content.find('/', positionOfKeyWordAssistTech)
+                    assistant = content[positionOfKeyWordAssistTech:positionOfKeyWordAssistTechEnd]
+
+                    positionOfAssistantNormalName = content.find('return false;">', positionOfKeyWordAssistTechEnd) + len('return false;">')
+                    positionOfAssistantNormalNameEnd = content.find('</a>)</span>', positionOfAssistantNormalName)
+                    assistantNormalName = content[positionOfAssistantNormalName:positionOfAssistantNormalNameEnd]
+                    assistantTechCode = content[content.find('return false;">', positionOfKeyWordAssistTechEnd) - 17:
+                                                content.find('return false;">', positionOfKeyWordAssistTechEnd) - 9]
+                    print('Assist - ' + assistant + ' ' + assistantNormalName + ' ' + assistantTechCode)
+
+                # penaltie part
+                positionOfPenalty = content.find(keyWordGoalPenalty, positionOfKeyWordHomeAway, positionOfKeyWordGoal)
+
+                if positionOfPenalty != -1:
+                    penalty = content[positionOfPenalty:positionOfPenalty + 7]
+                    print(penalty)
 
             positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfKeyWordGoal+len(keyWordIncident)) + len(keyWordIncident)
-
-            # print(content[positionOfKeyWordTimeOfGoal:content.find(keyWordTimeOfGoalEnd, positionOfKeyWordTimeOfGoal)])
             print(timeOfGoal)
-
-            countOfGoals -= 1
+            countOfGoals -= 1 # -- move iterrator for while
 
 def parseIncidents(content):
 
@@ -122,8 +267,10 @@ def parseIncidents(content):
         positionOfKeyWordIncidentSecondHalf = content.find(keyWordIncidentSecondHalf)+len(keyWordIncidentSecondHalf)
         subContentFirstHalf = content[positionOfKeyWordIncidentFirstHalf:positionOfKeyWordIncidentFirstHalfEnd]
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:]
-        parseTimeOfGoal(subContentFirstHalf, 'First half')
-        parseTimeOfGoal(subContentSecondHalf, 'Second half')
+        parseGoals(subContentFirstHalf, 'First half')
+        parseGoals(subContentSecondHalf, 'Second half')
+        parseMissedPenalties(subContentFirstHalf, 'First half')
+        parseMissedPenalties(subContentSecondHalf, 'Second half')
     elif content.count(keyWordIncidentPenalties) == 0 and content.count(keyWordIncidentExtraTime) == 1: #Match without penalties, but with extratime
         positionOfKeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
         positionOfKeyWordIncidentFirstHalfEnd = content.find(keyWordIncidentSecondHalf)
@@ -133,9 +280,12 @@ def parseIncidents(content):
         subContentFirstHalf = content[positionOfKeyWordIncidentFirstHalf:positionOfKeyWordIncidentFirstHalfEnd]
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:positionOfKeyWordIncidentSecondHalfEnd]
         subContentExtraTime = content[positionOfKeyWordIncidentExtraTime:]
-        parseTimeOfGoal(subContentFirstHalf, 'First half')
-        parseTimeOfGoal(subContentSecondHalf, 'Second half')
-        parseTimeOfGoal(subContentExtraTime, 'Extra time')
+        parseGoals(subContentFirstHalf, 'First half')
+        parseGoals(subContentSecondHalf, 'Second half')
+        parseGoals(subContentExtraTime, 'Extra time')
+        parseMissedPenalties(subContentFirstHalf, 'First half')
+        parseMissedPenalties(subContentSecondHalf, 'Second half')
+        parseMissedPenalties(subContentExtraTime, 'Extra time')
     elif content.count(keyWordIncidentExtraTime) == 0 and conent.count(keyWordIncidentPenalties) == 1: #Match without extratime, but with penalties
         positionOfkeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
         positionOfkeyWordIncidentFirstHalfEnd = content.find(keyWordIncidentSecondHalf)
@@ -145,9 +295,12 @@ def parseIncidents(content):
         subContentFirstHalf = content[positionOfkeyWordIncidentFirstHalf:positionOfkeyWordIncidentFirstHalfEnd]
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:positionOfKeyWordIncidentSecondHalfEnd]
         subContentPenalties = content[positionOfKeyWordIncidentPenalties:]
-        parseTimeOfGoal(subContentFirstHalf, 'First half')
-        parseTimeOfGoal(subContentSecondHalf, 'Second half')
-        parseTimeOfGoal(subContentPenalties, 'Penalties')
+        parseGoals(subContentFirstHalf, 'First half')
+        parseGoals(subContentSecondHalf, 'Second half')
+        parseGoals(subContentPenalties, 'Penalties')
+        parseMissedPenalties(subContentFirstHalf, 'First half')
+        parseMissedPenalties(subContentSecondHalf, 'Second half')
+        parseMissedPenalties(subContentPenalties, 'Penalties')
     else: #match with penalties and with Extratime
         positionOfkeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
         positionOfkeyWordIncidentFirstHalfEnd = content.find(keyWordIncidentSecondHalf)
@@ -160,10 +313,14 @@ def parseIncidents(content):
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:positionOfKeyWordIncidentSecondHalfEnd]
         subContentExtraTime = content[positionOfKeyWordIncidentExtraTime:positionOfKeyWordIncidentExtraTimeEnd]
         subContentPenalties = content[positionOfKeyWordIncidentPenalties:]
-        parseTimeOfGoal(subContentFirstHalf, 'First half')
-        parseTimeOfGoal(subContentSecondHalf, 'Second half')
-        parseTimeOfGoal(subContentExtraTime, 'Extra time')
-        parseTimeOfGoal(subContentPenalties, 'Penalties')
+        parseGoals(subContentFirstHalf, 'First half')
+        parseGoals(subContentSecondHalf, 'Second half')
+        parseGoals(subContentExtraTime, 'Extra time')
+        parseGoals(subContentPenalties, 'Penalties')
+        parseMissedPenalties(subContentFirstHalf, 'First half')
+        parseMissedPenalties(subContentSecondHalf, 'Second half')
+        parseMissedPenalties(subContentExtraTime, 'Extra time')
+        parseMissedPenalties(subContentPenalties, 'Penalties')
 
 def parseScore(content):
     matchStatus = '<div class="info-status mstat">'
@@ -202,9 +359,10 @@ def parseScore(content):
         print(content[positionOfMatchStatus:positionOfMatchStatusEnd])
 
 if __name__=='__main__':
-    path = 'Statistics\ADE 4-3 BRI _ Adelaide United - Brisbane Roar _ Match Summary.html'
+    # path = 'Statistics\ADE 4-3 BRI _ Adelaide United - Brisbane Roar _ Match Summary.html'
     # path = 'Statistics\HUN 1-2 SVK _ Hungary - Slovakia _ Match Summary.html'
-    # path = 'Statistics\POL 1-2 POR _ Poland - Portugal _ Match Summary.html'
+    path = 'Statistics\POL 1-2 POR _ Poland - Portugal _ Match Summary.html'
+    # path = 'Statistics\KOL 0-4 FC _ Kolos Kovalivka - Dyn. Kyiv _ Match Summary.html'
     file = open(path)
     content = file.read()
     # parseTitle(content)
