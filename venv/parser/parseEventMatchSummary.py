@@ -51,7 +51,6 @@ def parseMissedPenalties(content, period):
     keyWordGoleodor = 'participant-name'
     keyWordPlayerTech = '/player/'
 
-
     print(period + ' ' + str(content.count(keyWordMissedPenalties)))
 
     countOfGoals = content.count(keyWordMissedPenalties)
@@ -92,12 +91,79 @@ def parseMissedPenalties(content, period):
                 goleodorNormalName = content[positionOfGoleodorNormalName:positionOfGoleodorNormalNameEnd]
                 goleodorTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 17:
                                            content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 9]
+
                 print('Missed penalty - ' + goleodor + ' ' + goleodorNormalName + ' ' + goleodorTechCode)
                 positionOfkeyWordMissedPenalties = content.find(keyWordMissedPenalties, positionOfkeyWordMissedPenalties + len(keyWordMissedPenalties)) # ++ for itteration
 
             positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfkeyWordMissedPenalties+len(keyWordIncident)) + len(keyWordIncident)
             print(timeOfGoal)
             countOfGoals -= 1 # -- move iterrator for while
+
+def parseCards(content, period, keyWordCard):
+    keyWordIncident = 'detailMS__incidentRow incidentRow--'
+    keyWordTimeOfCard = '<div class="time-box">'
+    keyWordTimeOfCardEnd = "'</div>"
+    keyWordCardHolder = 'participant-name'
+    keyWordPlayerTech = '/player/'
+
+    if keyWordCard == 'icon y-card':
+        countOfCards = content.count(keyWordCard)
+        positionOfKeyWordCard = content.find(keyWordCard)
+        print(keyWordCard)
+    elif keyWordCard == 'icon yr-card':
+        countOfCards = content.count(keyWordCard)
+        positionOfKeyWordCard = content.find(keyWordCard)
+        print(keyWordCard)
+    else:
+        countOfCards = content.count(keyWordCard)
+        positionOfKeyWordCard = content.find(keyWordCard)
+        print(keyWordCard)
+
+    if positionOfKeyWordCard != -1:  # if it is goal in period
+        print(positionOfKeyWordCard)
+
+        positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfKeyWordCard) + len(keyWordIncident)
+
+        while countOfCards != 0:
+            team = content[positionOfKeyWordHomeAway:positionOfKeyWordHomeAway + 4]
+            print(team)
+            positionOfKeyWordTimeOfCard = content.rfind(keyWordTimeOfCard, 0, positionOfKeyWordCard) + len(keyWordTimeOfCard)
+            timeOfCard = content[positionOfKeyWordTimeOfCard:content.find(keyWordTimeOfCardEnd, positionOfKeyWordTimeOfCard)]  # Time of goal
+
+            if team == 'home':
+                # goleodor part
+                positionOfCardHolder = content.find(keyWordCardHolder, positionOfKeyWordCard)
+                positionOfKeyWordCardHolderTech = content.find(keyWordPlayerTech, positionOfCardHolder) + len(keyWordPlayerTech)
+                positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordCardHolderTech)
+                cardHolder = content[positionOfKeyWordCardHolderTech:positionOfKeyWordPlayerTechEnd]
+                positionOfCardHolderNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfCardHolderNormalNameEnd = content.find('</a></span>', positionOfCardHolderNormalName)
+                cardHolderNormalName = content[positionOfCardHolderNormalName:positionOfCardHolderNormalNameEnd]
+                cardHolderTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd)-17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd)-9]
+
+                print(keyWordCard + ' ' + cardHolder + ' ' + cardHolderNormalName + ' ' + cardHolderTechCode)
+
+                positionOfKeyWordCard = content.find(keyWordCard, positionOfKeyWordCard+len(keyWordCard)) # ++ for itteration
+
+            else:
+                positionOfCardHolder = content.find(keyWordCardHolder, positionOfKeyWordCard)
+                positionOfKeyWordCardHolderTech = content.find(keyWordPlayerTech, positionOfCardHolder) + len(keyWordPlayerTech)
+                positionOfKeyWordPlayerTechEnd = content.find('/', positionOfKeyWordCardHolderTech)
+                cardHolder = content[positionOfKeyWordCardHolderTech:positionOfKeyWordPlayerTechEnd]
+                positionOfCardHolderNormalName = content.find('return false;">', positionOfKeyWordPlayerTechEnd) + len('return false;">')
+                positionOfCardHolderNormalNameEnd = content.find('</a></span>', positionOfCardHolderNormalName)
+                cardHolderNormalName = content[positionOfCardHolderNormalName:positionOfCardHolderNormalNameEnd]
+                cardHolderTechCode = content[content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 17:
+                                           content.find('return false;">', positionOfKeyWordPlayerTechEnd) - 9]
+
+                print(keyWordCard + ' ' + cardHolder + ' ' + cardHolderNormalName + ' ' + cardHolderTechCode)
+                positionOfKeyWordCard = content.find(keyWordCard, positionOfKeyWordCard + len(keyWordCard)) # ++ for itteration
+
+            positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfKeyWordCard+len(keyWordIncident)) + len(keyWordIncident)
+            print(timeOfCard)
+            countOfCards -= 1  # -- move iterrator for while
+
 
 def parseGoals(content, period):
     keyWordIncident = 'detailMS__incidentRow incidentRow--'
@@ -229,10 +295,19 @@ def parseIncidents(content):
         positionOfKeyWordIncidentSecondHalf = content.find(keyWordIncidentSecondHalf)+len(keyWordIncidentSecondHalf)
         subContentFirstHalf = content[positionOfKeyWordIncidentFirstHalf:positionOfKeyWordIncidentFirstHalfEnd]
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:]
-        parseGoals(subContentFirstHalf, 'First half')
-        parseGoals(subContentSecondHalf, 'Second half')
-        parseMissedPenalties(subContentFirstHalf, 'First half')
-        parseMissedPenalties(subContentSecondHalf, 'Second half')
+        # parseGoals(subContentFirstHalf, 'First half')
+        # parseGoals(subContentSecondHalf, 'Second half')
+        # parseMissedPenalties(subContentFirstHalf, 'First half')
+        # parseMissedPenalties(subContentSecondHalf, 'Second half')
+
+        parseCards(subContentFirstHalf, 'First half', 'icon y-card')
+        parseCards(subContentFirstHalf, 'First half', 'icon yr-card')
+        parseCards(subContentFirstHalf, 'First half', 'icon r-card')
+
+        parseCards(subContentSecondHalf, 'Second half', 'icon y-card')
+        parseCards(subContentSecondHalf, 'Second half', 'icon yr-card')
+        parseCards(subContentSecondHalf, 'Second half', 'icon r-card')
+
     elif content.count(keyWordIncidentPenalties) == 0 and content.count(keyWordIncidentExtraTime) == 1: #Match without penalties, but with extratime
         positionOfKeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
         positionOfKeyWordIncidentFirstHalfEnd = content.find(keyWordIncidentSecondHalf)
@@ -242,12 +317,13 @@ def parseIncidents(content):
         subContentFirstHalf = content[positionOfKeyWordIncidentFirstHalf:positionOfKeyWordIncidentFirstHalfEnd]
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:positionOfKeyWordIncidentSecondHalfEnd]
         subContentExtraTime = content[positionOfKeyWordIncidentExtraTime:]
-        parseGoals(subContentFirstHalf, 'First half')
-        parseGoals(subContentSecondHalf, 'Second half')
-        parseGoals(subContentExtraTime, 'Extra time')
-        parseMissedPenalties(subContentFirstHalf, 'First half')
-        parseMissedPenalties(subContentSecondHalf, 'Second half')
-        parseMissedPenalties(subContentExtraTime, 'Extra time')
+        # parseGoals(subContentFirstHalf, 'First half')
+        # parseGoals(subContentSecondHalf, 'Second half')
+        # parseGoals(subContentExtraTime, 'Extra time')
+        # parseMissedPenalties(subContentFirstHalf, 'First half')
+        # parseMissedPenalties(subContentSecondHalf, 'Second half')
+        # parseMissedPenalties(subContentExtraTime, 'Extra time')
+        parseCards(subContentFirstHalf, 'First half')
     elif content.count(keyWordIncidentExtraTime) == 0 and conent.count(keyWordIncidentPenalties) == 1: #Match without extratime, but with penalties
         positionOfkeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
         positionOfkeyWordIncidentFirstHalfEnd = content.find(keyWordIncidentSecondHalf)
@@ -257,12 +333,12 @@ def parseIncidents(content):
         subContentFirstHalf = content[positionOfkeyWordIncidentFirstHalf:positionOfkeyWordIncidentFirstHalfEnd]
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:positionOfKeyWordIncidentSecondHalfEnd]
         subContentPenalties = content[positionOfKeyWordIncidentPenalties:]
-        parseGoals(subContentFirstHalf, 'First half')
-        parseGoals(subContentSecondHalf, 'Second half')
-        parseGoals(subContentPenalties, 'Penalties')
-        parseMissedPenalties(subContentFirstHalf, 'First half')
-        parseMissedPenalties(subContentSecondHalf, 'Second half')
-        parseMissedPenalties(subContentPenalties, 'Penalties')
+        # parseGoals(subContentFirstHalf, 'First half')
+        # parseGoals(subContentSecondHalf, 'Second half')
+        # parseGoals(subContentPenalties, 'Penalties')
+        # parseMissedPenalties(subContentFirstHalf, 'First half')
+        # parseMissedPenalties(subContentSecondHalf, 'Second half')
+        # parseMissedPenalties(subContentPenalties, 'Penalties')
     else: #match with penalties and with Extratime
         positionOfkeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
         positionOfkeyWordIncidentFirstHalfEnd = content.find(keyWordIncidentSecondHalf)
@@ -275,14 +351,14 @@ def parseIncidents(content):
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:positionOfKeyWordIncidentSecondHalfEnd]
         subContentExtraTime = content[positionOfKeyWordIncidentExtraTime:positionOfKeyWordIncidentExtraTimeEnd]
         subContentPenalties = content[positionOfKeyWordIncidentPenalties:]
-        parseGoals(subContentFirstHalf, 'First half')
-        parseGoals(subContentSecondHalf, 'Second half')
-        parseGoals(subContentExtraTime, 'Extra time')
-        parseGoals(subContentPenalties, 'Penalties')
-        parseMissedPenalties(subContentFirstHalf, 'First half')
-        parseMissedPenalties(subContentSecondHalf, 'Second half')
-        parseMissedPenalties(subContentExtraTime, 'Extra time')
-        parseMissedPenalties(subContentPenalties, 'Penalties')
+        # parseGoals(subContentFirstHalf, 'First half')
+        # parseGoals(subContentSecondHalf, 'Second half')
+        # parseGoals(subContentExtraTime, 'Extra time')
+        # parseGoals(subContentPenalties, 'Penalties')
+        # parseMissedPenalties(subContentFirstHalf, 'First half')
+        # parseMissedPenalties(subContentSecondHalf, 'Second half')
+        # parseMissedPenalties(subContentExtraTime, 'Extra time')
+        # parseMissedPenalties(subContentPenalties, 'Penalties')
 
 def parseTeams(content):
     keyWordTeam = 'class="participant-imglink" onclick="window.open(&#39;/team/'
@@ -344,12 +420,15 @@ def parseScore(content):
         positionOfMatchStatusEnd = content.find(matchStatusEnd)
         print(content[positionOfMatchStatus:positionOfMatchStatusEnd])
 
+
+
 if __name__=='__main__':
     # path = 'Statistics\ADE 4-3 BRI _ Adelaide United - Brisbane Roar _ Match Summary.html'
     # path = 'Statistics\HUN 1-2 SVK _ Hungary - Slovakia _ Match Summary.html'
-    path = 'Statistics\POL 1-2 POR _ Poland - Portugal _ Match Summary.html'
-    # path = 'Statistics\KOL 0-4 FC _ Kolos Kovalivka - Dyn. Kyiv _ Match Summary.html'
+    # path = 'Statistics\POL 1-2 POR _ Poland - Portugal _ Match Summary.html'
+    path = 'Statistics\KOL 0-4 FC _ Kolos Kovalivka - Dyn. Kyiv _ Match Summary.html'
     # path = 'Statistics\FK 1-3 SHA _ Oleksandriya - Shakhtar Donetsk _ Match Summary.html'
+    # path = 'Statistics\IRN 14-0 CAM _ Іран - Камбоджа _ Огляд матчу.html'
     file = open(path)
     content = file.read()
 
@@ -358,7 +437,6 @@ if __name__=='__main__':
     parseIncidents(content)
     parseScore(content)
     parseTeams(content)
-
 
     # print(globalDate)
     # print(globalTime)
