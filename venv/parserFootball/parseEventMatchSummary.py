@@ -4,20 +4,66 @@ globalTime = ''
 globalLeagua = ''
 globalLeaguaRound = ''
 globalLeaguaKindOfFinal = ''
+globalReferee = ''
+globalRefereeCountry = ''
+globalAttendance = ''
+globalVenueName = ''
+globalVenueCity = ''
+globalMatchStatus = ''
+globalAdvancingToNextRound = ''
+
+
+
 
 def parseTitle(content):
     global globalCountry
     global globalLeagua
     global globalLeaguaRound
     global globalLeaguaKindOfFinal
+    global globalReferee
+    global globalRefereeCountry
+    global globalAttendance
+    global globalVenueName
+    global globalVenueCity
+    global globalMatchStatus
+    global globalAdvancingToNextRound
 
     keyWordCountry = '<span class="description__country">'
+    keyWordLeague = ';">'
+    keyWordLeagueEnd = '</a>'
+    keyWordRefery = 'Referee: '
+    keyWordAttendance = 'Attendance: '
+    keyWordVenue = 'Venue: '
+    keyWordMatchStatus ='<div class="info-status mstat">'
+    keyWordAdvancingToNextRound = '<span class="dw-icon ico" title="Advancing to next round">'
+
+    if content.count(keyWordAdvancingToNextRound)==1:
+        globalAdvancingToNextRound = 'Advancing to next round'
+
+
+    globalMatchStatus = content[content.find(keyWordMatchStatus)+len(keyWordMatchStatus):
+                                content.find('</div>', content.find(keyWordMatchStatus))]
+
+    positionOfKeyWordVenue = content.find(keyWordVenue) + len(keyWordVenue)
+    positionOfKeyWordVenueEnd = content.find(' (', positionOfKeyWordVenue)
+    globalVenueName = content[positionOfKeyWordVenue:positionOfKeyWordVenueEnd]
+    globalVenueCity = content[positionOfKeyWordVenueEnd+2:content.find(')', positionOfKeyWordVenueEnd)]
+
+    globalAttendance = content[content.find(keyWordAttendance)+len(keyWordAttendance):
+                               content.find(',', content.find(keyWordAttendance))]
+    globalAttendance = globalAttendance.replace(' ', '')  #replace spaces to make number from string
+    # globalAttendance = int(globalAttendance)
+
+    positionOfKeyWordReferee = content.find(keyWordRefery) + len(keyWordRefery)
+    positionOfKeyWordRefereeEnd = content.find(' (', positionOfKeyWordReferee)
+    globalReferee = content[positionOfKeyWordReferee:positionOfKeyWordRefereeEnd]
+    positionOfKeyWordRefereeCountryEnd = content.find(')', positionOfKeyWordRefereeEnd)
+    globalRefereeCountry = content[positionOfKeyWordRefereeEnd+2:positionOfKeyWordRefereeCountryEnd]
+
     positionOfKeyWordCountry = content.find(keyWordCountry)+len(keyWordCountry)
     endOfKeyWordCountry = content.find(':', positionOfKeyWordCountry)
     globalCountry = content[positionOfKeyWordCountry:endOfKeyWordCountry]
 
-    keyWordLeague = ';">'
-    keyWordLeagueEnd = '</a>'
     positionOfKeyWordLeague = content.find(keyWordLeague, positionOfKeyWordCountry) + len(keyWordLeague)
     positionOfKeyWordLeagueEnd = content.find(keyWordLeagueEnd, positionOfKeyWordLeague)
     subContent = content[positionOfKeyWordLeague:positionOfKeyWordLeagueEnd]
@@ -32,6 +78,8 @@ def parseTitle(content):
         globalLeagua = listRound[0]
         globalLeaguaRound = listRound[1]
         globalLeaguaKindOfFinal = listRound[2]
+
+
 
 def parseDateTime(content):
     global globalDate
@@ -209,7 +257,7 @@ def parseGoals(content, period):
             else:
                 positionOfKeyWordTimeOfGoal = content.rfind(keyWordTimeOfGoalWide, 0, positionOfKeyWordGoal) + len(
                     keyWordTimeOfGoalWide)
-            # print(content[positionOfKeyWordTimeOfCard:positionOfKeyWordTimeOfCard+20])
+
             timeOfGoal = content[positionOfKeyWordTimeOfGoal:content.find(keyWordTimeOfGoalEnd,
                                                                           positionOfKeyWordTimeOfGoal)]  # Time of Goal
 
@@ -318,19 +366,19 @@ def parseIncidents(content):
         subContentFirstHalf = content[positionOfKeyWordIncidentFirstHalf:positionOfKeyWordIncidentFirstHalfEnd]
         subContentSecondHalf = content[positionOfKeyWordIncidentSecondHalf:]
 
-        # parseGoals(subContentFirstHalf, 'First half')
-        # parseGoals(subContentSecondHalf, 'Second half')
-        #
-        # parseMissedPenalties(subContentFirstHalf, 'First half')
-        # parseMissedPenalties(subContentSecondHalf, 'Second half')
-        #
-        # parseCards(subContentFirstHalf, 'First half', 'icon y-card')
-        # parseCards(subContentFirstHalf, 'First half', 'icon yr-card')
-        # parseCards(subContentFirstHalf, 'First half', 'icon r-card')
-        #
-        # parseCards(subContentSecondHalf, 'Second half', 'icon y-card')
-        # parseCards(subContentSecondHalf, 'Second half', 'icon yr-card')
-        # parseCards(subContentSecondHalf, 'Second half', 'icon r-card')
+        parseGoals(subContentFirstHalf, 'First half')
+        parseGoals(subContentSecondHalf, 'Second half')
+
+        parseMissedPenalties(subContentFirstHalf, 'First half')
+        parseMissedPenalties(subContentSecondHalf, 'Second half')
+
+        parseCards(subContentFirstHalf, 'First half', 'icon y-card')
+        parseCards(subContentFirstHalf, 'First half', 'icon yr-card')
+        parseCards(subContentFirstHalf, 'First half', 'icon r-card')
+
+        parseCards(subContentSecondHalf, 'Second half', 'icon y-card')
+        parseCards(subContentSecondHalf, 'Second half', 'icon yr-card')
+        parseCards(subContentSecondHalf, 'Second half', 'icon r-card')
 
         parseSubstitutions(subContentFirstHalf, 'First half')
         parseSubstitutions(subContentSecondHalf, 'First half')
@@ -361,9 +409,13 @@ def parseIncidents(content):
         parseCards(subContentSecondHalf, 'Second half', 'icon yr-card')
         parseCards(subContentSecondHalf, 'Second half', 'icon r-card')
 
-        parseCards(subContentSecondHalf, 'Extra time', 'icon y-card')
-        parseCards(subContentSecondHalf, 'Extra time', 'icon yr-card')
-        parseCards(subContentSecondHalf, 'Extra time', 'icon r-card')
+        parseCards(subContentExtraTime, 'Extra time', 'icon y-card')
+        parseCards(subContentExtraTime, 'Extra time', 'icon yr-card')
+        parseCards(subContentExtraTime, 'Extra time', 'icon r-card')
+
+        parseSubstitutions(subContentFirstHalf, 'First half')
+        parseSubstitutions(subContentSecondHalf, 'First half')
+        parseSubstitutions(subContentExtraTime, 'Extra Time')
 
     elif content.count(keyWordIncidentExtraTime) == 0 and conent.count(keyWordIncidentPenalties) == 1: #Match without extratime, but with penalties
         positionOfkeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
@@ -391,9 +443,13 @@ def parseIncidents(content):
         parseCards(subContentSecondHalf, 'Second half', 'icon yr-card')
         parseCards(subContentSecondHalf, 'Second half', 'icon r-card')
 
-        parseCards(subContentSecondHalf, 'Penalties', 'icon y-card')
-        parseCards(subContentSecondHalf, 'Penalties', 'icon yr-card')
-        parseCards(subContentSecondHalf, 'Penalties', 'icon r-card')
+        parseCards(subContentPenalties, 'Penalties', 'icon y-card')
+        parseCards(subContentPenalties, 'Penalties', 'icon yr-card')
+        parseCards(subContentPenalties, 'Penalties', 'icon r-card')
+
+        parseSubstitutions(subContentFirstHalf, 'First half')
+        parseSubstitutions(subContentSecondHalf, 'First half')
+        parseSubstitutions(subContentPenalties, 'Penalties')
 
     else: #match with penalties and with Extratime
         positionOfkeyWordIncidentFirstHalf = content.find(keyWordIncidentFirstHalf) + len(keyWordIncidentFirstHalf)
@@ -426,13 +482,18 @@ def parseIncidents(content):
         parseCards(subContentSecondHalf, 'Second half', 'icon yr-card')
         parseCards(subContentSecondHalf, 'Second half', 'icon r-card')
 
-        parseCards(subContentSecondHalf, 'Extra time', 'icon y-card')
-        parseCards(subContentSecondHalf, 'Extra time', 'icon yr-card')
-        parseCards(subContentSecondHalf, 'Extra time', 'icon r-card')
+        parseCards(subContentExtraTime, 'Extra time', 'icon y-card')
+        parseCards(subContentExtraTime, 'Extra time', 'icon yr-card')
+        parseCards(subContentExtraTime, 'Extra time', 'icon r-card')
 
-        parseCards(subContentSecondHalf, 'Penalties', 'icon y-card')
-        parseCards(subContentSecondHalf, 'Penalties', 'icon yr-card')
-        parseCards(subContentSecondHalf, 'Penalties', 'icon r-card')
+        parseCards(subContentPenalties, 'Penalties', 'icon y-card')
+        parseCards(subContentPenalties, 'Penalties', 'icon yr-card')
+        parseCards(subContentPenalties, 'Penalties', 'icon r-card')
+
+        parseSubstitutions(subContentFirstHalf, 'First half')
+        parseSubstitutions(subContentSecondHalf, 'First half')
+        parseSubstitutions(subContentExtraTime, 'Extra Time')
+        parseSubstitutions(subContentPenalties, 'Penalties')
 
 def parseTeams(content):
     keyWordTeam = 'class="participant-imglink" onclick="window.open(&#39;/team/'
@@ -503,7 +564,7 @@ def parseSubstitutions(content, period):
     keyWordSubstitutionPlayer = '/player/'
     keyWordPlayerTech = '/player/'
 
-    keyWordSubstitutionOut = '<span class="substitution-out-name">'
+    # keyWordSubstitutionOut = '<span class="substitution-out-name">'
 
     print(period + ' ' + str(content.count(keyWordSubstitution)))
 
@@ -531,7 +592,6 @@ def parseSubstitutions(content, period):
                                                                     positionOfKeyWordSubstitution) + len(keyWordTimeOfGoalWide)
             timeOfSubstitution = content[positionOfKeyWordTimeOfSubstitution:content.find(keyWordTimeOfSubstitutionEnd,
                                                                                   positionOfKeyWordTimeOfSubstitution)]  # Time of substitution
-#work good
             if team == 'home':
                 positionOfSubstitutionIn = content.find(keyWordSubstitutionPlayer, positionOfKeyWordSubstitution)
                 positionOfKeyWordSubstitutionPlayerTech = content.find(keyWordPlayerTech, positionOfSubstitutionIn) + len(
@@ -600,11 +660,9 @@ def parseSubstitutions(content, period):
 
                 print('out ' + team + ' ' + timeOfSubstitution + ' ' + substitutionOut + ' ' + substitutionPlayerNormalName + ' ' + substitutionPlayerTechCode + ' ' + timeOfSubstitution)
 
-                positionOfKeyWordSubstitution = content.find(keyWordSubstitution,
-                                                             positionOfKeyWordSubstitution + len(keyWordSubstitution))  # ++ for itteration
+                positionOfKeyWordSubstitution = content.find(keyWordSubstitution, positionOfKeyWordSubstitution + len(keyWordSubstitution))  # ++ for itteration
 
-            positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0,
-                                                      positionOfKeyWordSubstitution + len(keyWordIncident)) + len(keyWordIncident)
+            positionOfKeyWordHomeAway = content.rfind(keyWordIncident, 0, positionOfKeyWordSubstitution + len(keyWordIncident)) + len(keyWordIncident)
             # print(timeOfSubstitution)
             countOfSubstitution -= 1  # -- move iterrator for while
 
@@ -612,23 +670,30 @@ def parseSubstitutions(content, period):
 if __name__=='__main__':
     # path = 'Statistics\ADE 4-3 BRI _ Adelaide United - Brisbane Roar _ Match Summary.html'
     # path = 'Statistics\HUN 1-2 SVK _ Hungary - Slovakia _ Match Summary.html'
-    # path = 'Statistics\POL 1-2 POR _ Poland - Portugal _ Match Summary.html'
-    path = 'Statistics\KOL 0-4 FC _ Kolos Kovalivka - Dyn. Kyiv _ Match Summary.html'
+    path = 'Statistics\POL 1-2 POR _ Poland - Portugal _ Match Summary.html'
+    # path = 'Statistics\KOL 0-4 FC _ Kolos Kovalivka - Dyn. Kyiv _ Match Summary.html'
     # path = 'Statistics\FK 1-3 SHA _ Oleksandriya - Shakhtar Donetsk _ Match Summary.html'
     # path = 'Statistics\IRN 14-0 CAM _ Іран - Камбоджа _ Огляд матчу.html'
+    # path = 'Statistics\WHU 0-1 TOT _ West Ham - Tottenham _ Match Summary.html'
     file = open(path)
     content = file.read()
 
-    # parseTitle(content)
-    # parseDateTime(content)
+    parseTitle(content)
+    parseDateTime(content)
     parseIncidents(content)
-    # parseScore(content)
-    # parseTeams(content)
+    parseScore(content)
+    parseTeams(content)
 
-    # print(globalDate)
-    # print(globalTime)
-    # print(globalCountry)
-    # print(globalLeagua)
-    # print(globalLeaguaRound)
-    # print(globalLeaguaKindOfFinal)
-
+    print(globalDate)
+    print(globalTime)
+    print(globalCountry)
+    print(globalLeagua)
+    print(globalLeaguaRound)
+    print(globalLeaguaKindOfFinal)
+    print(globalReferee)
+    print(globalRefereeCountry)
+    print(globalAttendance)
+    print(globalVenueName)
+    print(globalVenueCity)
+    print(globalMatchStatus)
+    print(globalAdvancingToNextRound)
